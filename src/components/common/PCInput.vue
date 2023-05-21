@@ -1,10 +1,8 @@
 <script setup lang="ts">
-const emit = defineEmits(["input"]);
+defineEmits(["update:modelValue"]);
 
 defineProps({
-  value: {
-    type: String,
-  },
+  modelValue: {},
   placeholder: {
     type: String,
     default: "Your input",
@@ -14,19 +12,17 @@ defineProps({
     default: false,
   },
 });
-
-const handleInput = (event: Event) => {
-  emit("input", (event.target as HTMLInputElement).value);
-};
 </script>
 
 <template>
-  <div class="border rounded p-2 focus:border-red-200">
+  <div class="border h-[50px] rounded p-2 focus:border-red-200">
     <input
-      :value="value"
-      class="focus:outline-none w-full bg-transparent"
+      class="focus:outline-none w-full h-full bg-transparent"
       :placeholder="placeholder"
-      @input="handleInput"
+      :value="modelValue"
+      @input="
+        $emit('update:modelValue', ($event.target as HTMLInputElement).value)
+      "
       :disabled="disabled"
     />
   </div>

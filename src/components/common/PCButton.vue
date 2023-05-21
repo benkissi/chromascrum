@@ -1,3 +1,13 @@
+<script setup lang="ts">
+const emit = defineEmits(["click"]);
+defineProps<{
+  text: string;
+  disabled?: boolean;
+  bgColor?: string;
+  lg?: boolean;
+}>();
+</script>
+
 <template>
   <button
     :disabled="disabled"
@@ -7,32 +17,8 @@
       bgColor ? bgColor : 'bg-purple-600',
       lg ? 'p-4 px-10' : 'p-2',
     ]"
-    @click="$emit('btnClick')"
+    @click="emit('click')"
   >
     {{ text }}
   </button>
 </template>
-
-<script>
-export default {
-  props: {
-    text: {
-      type: String,
-      default: "Button text",
-    },
-    disabled: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    bgColor: {
-      type: String,
-      required: false,
-    },
-    lg: {
-      type: Boolean,
-      required: false,
-    },
-  },
-};
-</script>
