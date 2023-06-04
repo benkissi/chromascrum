@@ -4,7 +4,7 @@ const emit = defineEmits(["remove"]);
 </script>
 
 <template>
-  <div class="relative rounded border bg-white p-5 shadow-md">
+  <div class="relative rounded border bg-white p-5 shadow-md w-full">
     <div
       @click="emit('remove')"
       class="flex items-center absolute p-1 cursor-pointer rounded bg-black text-white shadow-sm border -right-2 -top-2"

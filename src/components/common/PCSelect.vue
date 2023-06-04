@@ -4,11 +4,18 @@ import { ref, computed } from "vue";
 import { TSelectOptions, TSelectItem } from "../../utils/types";
 
 const emit = defineEmits(["selection"]);
-const props = defineProps<{
-  placeholder: string;
-  options: TSelectOptions;
-  existingValue: TSelectItem | null;
-}>();
+const props = withDefaults(
+  defineProps<{
+    placeholder?: string;
+    options: TSelectOptions;
+    existingValue?: TSelectItem;
+    errorMsg?: string;
+  }>(),
+  {
+    placeholder: "Select voting type",
+    errorMsg: "",
+  }
+);
 
 const selected = ref(props.existingValue);
 const showList = ref(false);
@@ -33,6 +40,7 @@ const isSelected = (item: TSelectItem) => {
   <div class="relative">
     <div
       @click="showList = !showList"
+      :class="{ '!border-red-200': errorMsg }"
       class="flex items-center border rounded p-2 cursor-pointer h-[50px]"
     >
       <div :class="['flex-1 text-left', !selected && 'text-gray-400']">

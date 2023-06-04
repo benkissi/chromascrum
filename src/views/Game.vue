@@ -8,12 +8,15 @@ import Task from "../components/game/Task.vue";
 import AddTask from "../components/game/AddTask.vue";
 import GameBoard from "../components/game/GameBoard.vue";
 import Nav from "../components/game/Nav.vue";
+import SummaryStats from "../components/game/SummaryStats.vue";
+import Footer from "../components/game/Footer.vue";
 
 import PCModal from "../components/common/PCModal.vue";
 
 const gameStore = useGameStore();
 const { tasks } = storeToRefs(gameStore);
 const showModal = ref(false);
+const players = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
 const gameTitle = ref("");
 const gameDescription = ref("");
@@ -48,25 +51,34 @@ const handleAddTask = () => {
     </PCModal>
     <div class="h-full w-[500px] bg-purple-100 p-7">
       <div class="h-[50%]">
-        <div class="text-xl font-bold mb-5">Players</div>
+        <div class="flex justify-between mb-5">
+          <div class="text-xl font-bold">Players</div>
+          <div>2/10 Played</div>
+        </div>
 
-        <Player name="ben kissi" />
+        <div class="h-[87%] overflow-y-scroll">
+          <div v-for="player in players" :key="player">
+            <div class="p-2">
+              <Player name="ben kissi" />
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="">
+      <div class="flex-col h-[50%]">
         <div class="flex items-center justify-between mb-10">
           <di class="text-xl font-bold">Tasks</di>
           <div class="w-[40%]">
             <PCButton text="Add" @click="showModal = true" />
           </div>
         </div>
-        <div class="mt-10">
+        <div class="pt-2 w-full h-[87%] overflow-y-scroll">
           <div
             v-if="tasks.length === 0"
             class="text-center font-[600] text-gray-400"
           >
             No task added yet
           </div>
-          <div v-else>
+          <div v-else class="!w-[98%]">
             <div class="mb-10" v-for="item in tasks" :key="item.title">
               <Task @remove="gameStore.removeTask(item.id)">
                 <template #title>
@@ -81,11 +93,38 @@ const handleAddTask = () => {
         </div>
       </div>
     </div>
-    <div class="flex flex-col p-2 flex-1">
-      <Nav class="mb-10" />
+    <div class="flex flex-col p-2 flex-1 overflow-hidden">
+      <Nav class="mb-10" gameName="Sprint10" />
       <div class="flex-1">
         <GameBoard />
+      </div>
+      <div class="w-full relative"><Footer /></div>
+      <div>
+        <SummaryStats />
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #a2a2a2 transparent;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #a2a2a2;
+  border-radius: 20px;
+  border: 3px solid transparent;
+}
+</style>

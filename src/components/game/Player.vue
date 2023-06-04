@@ -10,5 +10,6 @@ const props = defineProps<{
   <div class="flex items-center">
     <PCAvater :name="props.name" />
     <div class="ml-2 capitalize text-xl font-albert">{{ name }}</div>
+    <div class="ml-auto font-bold italic text-green-600">played</div>
   </div>
 </template>

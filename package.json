@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "pinia": "^2.0.36",
+    "socket.io-client": "^4.6.2",
     "vue": "^3.2.47",
     "vue-router": "4"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.17",
+    "@types/node": "^20.2.5",
     "@vitejs/plugin-vue": "^4.1.0",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.23",
