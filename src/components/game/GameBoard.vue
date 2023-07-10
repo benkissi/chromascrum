@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { Ref } from "vue";
+import { storeToRefs } from "pinia";
 import CardItem from "./CardItem.vue";
 import PCButton from "../common/PCButton.vue";
 import Cards from "./Cards.vue";
+import { useGameStore } from "../../stores/game";
+import { toastify } from "../../utils/methods";
+
+import { sendVote } from "../../socket";
+
+const gameStore = useGameStore();
+const { hasIncompleteTasks, currentUser, details } = storeToRefs(gameStore);
 
 const reveal = ref(false);
 const votingType = ref("powers of 2");
@@ -11,6 +19,12 @@ const selectedVote: Ref<string | number> = ref("");
 
 const handleVoteSelection = (selection: number | string) => {
   selectedVote.value = selection;
+  sendVote({ user: currentUser.value, vote: selection }, (error: string) => {
+    console.log("error----", error);
+    if (error) {
+      toastify(error, "error");
+    }
+  });
 };
 </script>
 
@@ -41,12 +55,11 @@ const handleVoteSelection = (selection: number | string) => {
       </div>
     </div>
 
-    <div class="flex justify-center">
+    <div v-if="hasIncompleteTasks" class="flex justify-center">
       <Cards
         :type="votingType"
         :ready="true"
         :selection="selectedVote"
-        class="mb-20"
         v-on:voteSelected="handleVoteSelection"
       />
     </div>

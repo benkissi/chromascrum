@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { reactive } from "vue";
+import { useRouter } from "vue-router";
 import { useValidation } from "../composables/useValidation.js";
+import { useGameStore } from "../stores/game";
 
 import PCInput from "../components/common/PCInput.vue";
 import PCSelect from "../components/common/PCSelect.vue";
@@ -8,6 +10,12 @@ import PCButton from "../components/common/PCButton.vue";
 import CardsImage from "../assets/svg/CardsImage.vue";
 
 import { socket } from "../socket";
+
+import { TSocketGame, TSocketUser } from "../utils/types";
+import { toastify } from "../utils/methods";
+
+const router = useRouter();
+const gameStore = useGameStore();
 
 const formValues = reactive({
   gameName: "",
@@ -62,6 +70,7 @@ const votingOptions = [
 
 const handleStartGame = () => {
   if (createError.value) {
+    toastify("Fill all fields", "error");
     return;
   }
   console.log("level2 ", formValues);
@@ -69,11 +78,14 @@ const handleStartGame = () => {
   socket.emit(
     "startGame",
     formValues,
-    (error: string, game: any, user: any) => {
+    (error: string, game: TSocketGame, user: TSocketUser) => {
       if (error) {
         console.log(error);
       } else {
         console.log("created--->", game, user);
+        toastify("Game created successfully", "success");
+        gameStore.setDetails(game);
+        router.push({ name: "game", params: { id: game.room } });
       }
     }
   );

@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import GIcon from "../common/GIcon.vue";
 const emit = defineEmits(["remove"]);
+
+defineProps({
+  score: {
+    type: Number,
+    default: null,
+  },
+});
 </script>
 
 <template>
@@ -19,6 +26,7 @@ const emit = defineEmits(["remove"]);
       <slot name="description">Create frontend page</slot>
     </div>
     <div
+      v-if="score"
       class="absolute p-2 rounded -bottom-4 -right-2 text-white font-bold bg-orange-600"
     >
       10

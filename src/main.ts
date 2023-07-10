@@ -3,6 +3,7 @@ import { createPinia } from "pinia";
 import "./style.css";
 import App from "./App.vue";
 
+import "./utils/toastEventBus.ts";
 import "./socket.ts";
 
 import router from "./router";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useGameStore } from "../stores/game";
 import Player from "../components/game/Player.vue";
@@ -13,25 +13,62 @@ import Footer from "../components/game/Footer.vue";
 
 import PCModal from "../components/common/PCModal.vue";
 
-const gameStore = useGameStore();
-const { tasks } = storeToRefs(gameStore);
-const showModal = ref(false);
-const players = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+import { sendTask, removeTask } from "../socket";
 
-const gameTitle = ref("");
-const gameDescription = ref("");
+import { toastify } from "../utils/methods";
+
+const gameStore = useGameStore();
+const { tasks, roomInfo, details } = storeToRefs(gameStore);
+const showModal = ref(false);
+
+const taskTitle = ref("");
+const taskDescription = ref("");
+
+const players = computed(() => {
+  if (roomInfo.value) {
+    return roomInfo.value.users;
+  }
+  return [];
+});
+
+const votedCount = computed(() => {
+  if (roomInfo.value) {
+    const votedList = roomInfo.value.users.filter((user) => user.vote !== null);
+    return votedList.length;
+  }
+
+  return 0;
+});
 
 const handleAddTask = () => {
   const payload = {
-    id: Date.now(),
-    title: gameTitle.value,
-    description: gameDescription.value,
+    gameRoom: details.value?.room,
+    title: taskTitle.value,
+    description: taskDescription.value,
   };
 
-  gameStore.addTask(payload);
+  sendTask(payload, (error: string) => {
+    if (error) {
+      toastify(error, "error");
+    }
+  });
+
   showModal.value = false;
-  gameTitle.value = "";
-  gameDescription.value = "";
+  taskTitle.value = "";
+  taskDescription.value = "";
+};
+
+const handleRemoveTask = (id: string | number) => {
+  const payload = {
+    gameRoom: details.value?.room,
+    taskId: id,
+  };
+  console.log("payload", payload);
+  removeTask(payload, (error: string) => {
+    if (error) {
+      toastify(error, "error");
+    }
+  });
 };
 </script>
 
@@ -43,8 +80,8 @@ const handleAddTask = () => {
       </template>
       <div class="mt-10">
         <AddTask
-          v-model:title="gameTitle"
-          v-model:description="gameDescription"
+          v-model:title="taskTitle"
+          v-model:description="taskDescription"
           @submit="handleAddTask"
         />
       </div>
@@ -53,13 +90,13 @@ const handleAddTask = () => {
       <div class="h-[50%]">
         <div class="flex justify-between mb-5">
           <div class="text-xl font-bold">Players</div>
-          <div>2/10 Played</div>
+          <div>{{ votedCount }}/{{ players.length }} Played</div>
         </div>
 
         <div class="h-[87%] overflow-y-scroll">
-          <div v-for="player in players" :key="player">
+          <div v-for="player in players" :key="player.id">
             <div class="p-2">
-              <Player name="ben kissi" />
+              <Player :name="player.username" :vote="player.vote" />
             </div>
           </div>
         </div>
@@ -80,7 +117,7 @@ const handleAddTask = () => {
           </div>
           <div v-else class="!w-[98%]">
             <div class="mb-10" v-for="item in tasks" :key="item.title">
-              <Task @remove="gameStore.removeTask(item.id)">
+              <Task :score="item.score" @remove="handleRemoveTask(item.id)">
                 <template #title>
                   {{ item.title }}
                 </template>
@@ -98,7 +135,7 @@ const handleAddTask = () => {
       <div class="flex-1">
         <GameBoard />
       </div>
-      <div class="w-full relative"><Footer /></div>
+      <div class="w-full relative mt-20"><Footer /></div>
       <div>
         <SummaryStats />
       </div>
